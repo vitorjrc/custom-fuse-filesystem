@@ -293,6 +293,64 @@ static int xmp_create(const char *path, mode_t mode,
 	return 0;
 }
 
+char* genKey() {
+
+    int length = 6;
+    static char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    char *keyString;
+
+    keyString = malloc (sizeof(char) * (length + 1));
+
+    srand(time(NULL));
+
+    for (int n = 0; n < length; n++) {
+
+        int key = rand() % (int) (sizeof(charset) - 1);
+        keyString[n] = charset[key];
+
+    }
+
+    keyString[length] = '\0';
+
+    return keyString;
+
+}
+
+// retorna 1 -> sucesso; retorna 0 -> erro
+int sendEmail(char* key) {
+
+    quickmail_initialize();
+    quickmail mailobj = quickmail_create("ficheiro@seguro.pt", "Código para abertura do ficheiro");
+
+    char temp1[] = "Codigo: ";
+    char temp2[] = " \nCumprimentos.\n";
+
+    char *body;
+    int size = strlen(temp1) + strlen(temp2) + strlen(key);
+    body = malloc (sizeof(char) * size);
+
+    strcpy(body, temp1);
+    strcat(body, key);
+    strcat(body, temp2);
+
+    quickmail_set_body(mailobj, body);
+	quickmail_add_to(mailobj, "stoj97@gmail.com");
+
+	const char *errmsg = quickmail_send_secure(mailobj, "smtp.sendgrid.net", 465, "apikey", "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");
+
+    if (errmsg != NULL) {
+
+        fprintf(stderr, "Erro no envio do email: %s\n", errmsg);
+        return 0;
+    }
+
+    printf("Um código foi enviado para o seu email.\n");
+
+    quickmail_destroy(mailobj);
+
+    return 1;
+}
+
 static int xmp_open(const char *path, struct fuse_file_info *fi)
 {
 	int res;
@@ -306,10 +364,10 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
  	char *wrongCode = "yad --title \"Abrir ficheiro\" --text \"Código errado.\" --text-align=center --button=gtk-close:1 --width=250 --height=50";
 
  	/* If you want to read output from command */
-	fp = popen(command,"r"); 
+	fp = popen(command,"r");
     	/* read output from command */
     	int numreads = fscanf(fp, "%6c", answer);   /* or other STDIO input functions */
- 
+
 	fclose(fp);
 
 	//printf("%c,%c,%c,%c,%c,%c\n", answer[0], answer[1], answer[2], answer[3], answer[4], answer[5]); -- for debug purposes
@@ -341,7 +399,7 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 			return -EACCES;
 		}
 	}
-	
+
 	return -1;
 }
 
@@ -355,7 +413,7 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 		fd = open(path, O_RDONLY);
 	else
 		fd = fi->fh;
-	
+
 	if (fd == -1)
 		return -errno;
 
@@ -379,7 +437,7 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 		fd = open(path, O_WRONLY);
 	else
 		fd = fi->fh;
-	
+
 	if (fd == -1)
 		return -errno;
 
@@ -438,7 +496,7 @@ static int xmp_fallocate(const char *path, int mode,
 		fd = open(path, O_WRONLY);
 	else
 		fd = fi->fh;
-	
+
 	if (fd == -1)
 		return -errno;
 
