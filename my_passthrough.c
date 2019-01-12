@@ -343,11 +343,11 @@ int sendEmail(char* key) {
 
     if (errmsg != NULL) {
 
-        // fprintf(stderr, "Erro no envio do email: %s\n", errmsg); -- for debug purposes
+        fprintf(stderr, "Erro no envio do email: %s\n", errmsg);
         return 0;
     }
 
-    //printf("Um código foi enviado para o seu email.\n"); -- for debug purposes
+    printf("Um código foi enviado para o seu email.\n");
 
     quickmail_destroy(mailobj);
 
@@ -357,20 +357,12 @@ int sendEmail(char* key) {
 static int xmp_open(const char *path, struct fuse_file_info *fi)
 {
 	int res;
+	char *codigoTeste = "QWERTY";
 	char answer[6] = "";
-
-	printf("$ GENERATING KEY\n");
-	char *codigo = genKey();
-	printf("$ generated: %s\n", codigo);
-
-	printf("$ SENDING EMAIL\n");
-	int sent = sendEmail(codigo);
-	if (sent == 1) printf("$ success.\n");
-	else printf("$ unable to send email.\n");
 
 	printf("$ OPENING CODE WINDOW\n");
 	FILE *fp;
- 	char *command = "yad --title \"Abrir ficheiro\" --timeout=60 --timeout-indicator=top --text \"Insira o código que lhe foi enviado para o email.\" --text-align=center --width=350 --height=100 --entry";
+ 	char *command = "yad --title \"Abrir ficheiro\" --timeout=5 --timeout-indicator=top --text \"Insira o código que lhe foi enviado para o email.\" --text-align=center --width=350 --height=100 --entry";
  	char *timeExpired = "yad --title \"Abrir ficheiro\" --text \"Tempo de inserção de código expirado.\" --text-align=center --button=gtk-close:1 --width=250 --height=50";
  	char *wrongCode = "yad --title \"Abrir ficheiro\" --text \"Código errado.\" --text-align=center --button=gtk-close:1 --width=250 --height=50";
 
@@ -391,7 +383,7 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 	}
 	else {
 		// respondeu corretamente
-		if(strcmp(codigo, answer) == 0) {
+		if(strcmp(codigoTeste, answer) == 0) {
 			printf("$ CORRECT CODE\n");
 			// comportamento default.
 			// se tem as permissões é só ver se a abertura correu bem e siga.
