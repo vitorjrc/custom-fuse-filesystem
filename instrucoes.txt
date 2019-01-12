@@ -1,0 +1,15 @@
+Fazer download disto no browser do Ubuntu
+https://sourceforge.net/projects/libquickmail/
+
+extrair...
+
+Instalar curl na máquina; (sudo apt-get install libcurl4-openssl-dev)
+Instalar libquickmail (executa isto na pasta ./configure, make e sudo make install)
+
+adicionar a linha /usr/local/lib ao ficheiro /etc/ld.so.conf.d/local.conf
+se não existir, criar...
+
+sudo ldconfig
+
+Compilar com:
+gcc main.c -lquickmail -o main
