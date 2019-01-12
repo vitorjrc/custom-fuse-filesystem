@@ -298,20 +298,22 @@ static int xmp_create(const char *path, mode_t mode,
 
 char* getEmail(int idUser) {
 
-    FILE* fp;
+    FILE* fp2;
     char* line = NULL;
     size_t len = 0;
     ssize_t read;
 
-    fp = fopen("ficheiro.txt", "r");
+    fp2 = fopen("/home/ssiwins/Desktop/custom-fuse-filesystem/users.txt", "r");
 
-    if (fp == NULL)
+    if (fp2 == NULL) {
+    	printf("$ não foi possível abrir o ficheiro\n");
         exit(EXIT_FAILURE);
+    }
 
     const char* delims = ";";
     int found = 0;
 
-    while ((read = getline(&line, &len, fp)) != -1 && found == 0) {
+    while ((read = getline(&line, &len, fp2)) != -1 && found == 0) {
 
         char* id = strtok (line, delims);
 
@@ -319,12 +321,14 @@ char* getEmail(int idUser) {
 
             char* email = strtok (NULL, delims);
 
+            printf("email: %s\n", email);
+
             return email;
         }
 
     }
 
-    fclose(fp);
+    fclose(fp2);
 
     if (line) {
 
@@ -354,6 +358,7 @@ char* genKey() {
     }
 
     keyString[length] = '\0';
+    // printf("%s", keyString); //-- for debug purposes
 
     return keyString;
 
@@ -377,17 +382,20 @@ int sendEmail(char* key, char* email) {
     strcat(body, temp2);
 
     quickmail_set_body(mailobj, body);
-	quickmail_add_to(mailobj, *email);
+    // put '\0' at the end
+    email[strlen(email)-1] = '\0';
+    printf("to email: %s\n", email);
+	quickmail_add_to(mailobj, email);
 
 	const char *errmsg = quickmail_send_secure(mailobj, "smtp.sendgrid.net", 465, "apikey", "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");
 
     if (errmsg != NULL) {
 
-        // fprintf(stderr, "Erro no envio do email: %s\n", errmsg); -- for debug purposes
+        // fprintf(stderr, "Erro no envio do email: %s\n", errmsg); //-- for debug purposes
         return 0;
     }
 
-    //printf("Um código foi enviado para o seu email.\n"); -- for debug purposes
+    //printf("Um código foi enviado para o seu email.\n"); //-- for debug purposes
 
     quickmail_destroy(mailobj);
 
@@ -397,31 +405,34 @@ int sendEmail(char* key, char* email) {
 static int xmp_open(const char *path, struct fuse_file_info *fi)
 {
 	int res;
-	char answer[6] = "";
+	char answer[6+1] = "";
+	answer[7] = '\0';
 
-	char* userId;
-	FILE *fp1 = popen("id -u", "r");
+	printf("$ CHECKING USER\n");
+	char userId[10];
+	FILE *fp1; 
+	fp1 = popen("id -u", "r");
 	/* read output from command */
 	fscanf(fp1, "%s", userId);   /* or other STDIO input functions */
+	printf("uid: %s\n", userId);
 
 	fclose(fp1);
 
-	char* email = getEmail(atoi(userId);
-
+	char* email = getEmail(atoi(userId));
 	if (email == NULL) {
 
 		printf("$ WRONG CODE\n");
-		system(wrongCode);
+		system("yad --title \"Abrir ficheiro\" --text \"Utilizador não autorizado.\" --text-align=center --button=gtk-close:1 --width=250 --height=50");
 		return -EACCES;
 	}
 
 	printf("$ GENERATING KEY\n");
 	char *codigo = genKey();
-	printf("$ generated: %s\n", codigo);
+	// printf("$ generated: %s, %d", codigo, strlen(codigo)); //-- for debug purposes
 
 	printf("$ SENDING EMAIL\n");
 	int sent = sendEmail(codigo, email);
-	if (sent == 1) printf("$ success.\n");
+	if (sent == 1) printf("$ success.\n\n");
 	else printf("$ unable to send email.\n");
 
 	printf("$ OPENING CODE WINDOW\n");
@@ -437,7 +448,8 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 
 	fclose(fp);
 
-	//printf("%c,%c,%c,%c,%c,%c\n", answer[0], answer[1], answer[2], answer[3], answer[4], answer[5]); -- for debug purposes
+	// printf("%c,%c,%c,%c,%c,%c\n", answer[0], answer[1], answer[2], answer[3], answer[4], answer[5]); //-- for debug purposes
+	// printf("$ generated: %s, %d", answer, strlen(answer)); //-- for debug purposes
 
 	// passou o tempo
 	if(numreads == -1) {
