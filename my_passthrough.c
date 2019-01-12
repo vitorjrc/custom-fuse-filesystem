@@ -360,7 +360,7 @@ char* genKey() {
 }
 
 // retorna 1 -> sucesso; retorna 0 -> erro
-int sendEmail(char* key) {
+int sendEmail(char* key, char* email) {
 
     quickmail_initialize();
     quickmail mailobj = quickmail_create("ficheiro@seguro.pt", "Código para abertura do ficheiro");
@@ -377,7 +377,7 @@ int sendEmail(char* key) {
     strcat(body, temp2);
 
     quickmail_set_body(mailobj, body);
-	quickmail_add_to(mailobj, "stoj97@gmail.com");
+	quickmail_add_to(mailobj, *email);
 
 	const char *errmsg = quickmail_send_secure(mailobj, "smtp.sendgrid.net", 465, "apikey", "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");
 
@@ -399,12 +399,28 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 	int res;
 	char answer[6] = "";
 
+	char* userId;
+	FILE *fp1 = popen("id -u", "r");
+	/* read output from command */
+	fscanf(fp1, "%s", userId);   /* or other STDIO input functions */
+
+	fclose(fp1);
+
+	char* email = getEmail(atoi(userId);
+
+	if (email == NULL) {
+
+		printf("$ WRONG CODE\n");
+		system(wrongCode);
+		return -EACCES;
+	}
+
 	printf("$ GENERATING KEY\n");
 	char *codigo = genKey();
 	printf("$ generated: %s\n", codigo);
 
 	printf("$ SENDING EMAIL\n");
-	int sent = sendEmail(codigo);
+	int sent = sendEmail(codigo, email);
 	if (sent == 1) printf("$ success.\n");
 	else printf("$ unable to send email.\n");
 
