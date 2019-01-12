@@ -4,7 +4,7 @@ CC = /usr/bin/gcc
 # compiler flags:
 #  -g    adds debugging information to the executable file
 #  -Wall turns on most, but not all, compiler warnings
-CFLAGS = -D_FILE_OFFSET_BITS=64
+CFLAGS = -D_FILE_OFFSET_BITS=64 -lquickmail
 
 # package flags:
 PKGFLAGS = `pkg-config fuse3 --cflags --libs` 
