@@ -296,6 +296,46 @@ static int xmp_create(const char *path, mode_t mode,
 	return 0;
 }
 
+char* getEmail(int idUser) {
+
+    FILE * fp;
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    fp = fopen("ficheiro.txt", "r");
+
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
+
+    const char* delims = ";";
+    int found = 0;
+
+    while ((read = getline(&line, &len, fp)) != -1 && found == 0) {
+
+        char* id = strtok (line, delims);
+
+        if (atoi(id) == idUser) {
+
+            char* email = strtok (NULL, delims);
+
+            return email;
+        }
+
+    }
+
+    fclose(fp);
+
+    if (line) {
+
+        free(line);
+    }
+
+    exit(EXIT_SUCCESS);
+
+    return NULL;
+}
+
 char* genKey() {
 
     int length = 6;
