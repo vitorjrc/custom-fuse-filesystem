@@ -298,8 +298,8 @@ static int xmp_create(const char *path, mode_t mode,
 
 char* getEmail(int idUser) {
 
-    FILE * fp;
-    char * line = NULL;
+    FILE* fp;
+    char* line = NULL;
     size_t len = 0;
     ssize_t read;
 
