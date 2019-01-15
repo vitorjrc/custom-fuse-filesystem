@@ -437,7 +437,7 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 
 	printf("$ OPENING CODE WINDOW\n");
 	FILE *fp;
- 	char *command = "yad --title \"Abrir ficheiro\" --timeout=60 --timeout-indicator=top --text \"Insira o código que lhe foi enviado para o email.\" --text-align=center --width=350 --height=100 --entry";
+ 	char *command = "yad --title \"Abrir ficheiro\" --timeout=30 --timeout-indicator=top --text \"Insira o código que lhe foi enviado para o email.\" --text-align=center --width=350 --height=100 --entry";
  	char *timeExpired = "yad --title \"Abrir ficheiro\" --text \"Tempo de inserção de código expirado.\" --text-align=center --button=gtk-close:1 --width=250 --height=50";
  	char *wrongCode = "yad --title \"Abrir ficheiro\" --text \"Código errado.\" --text-align=center --button=gtk-close:1 --width=250 --height=50";
 
