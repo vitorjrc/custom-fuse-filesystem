@@ -303,7 +303,7 @@ char* getEmail(int idUser) {
     size_t len = 0;
     ssize_t read;
 
-    fp2 = fopen("/home/ssiwins/Desktop/custom-fuse-filesystem/users.txt", "r");
+    fp2 = fopen("/home/users.txt", "r");
 
     if (fp2 == NULL) {
     	printf("$ não foi possível abrir o ficheiro\n");

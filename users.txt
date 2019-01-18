@@ -1,2 +1,3 @@
-1000;stoj97@gmail.com
-1001;vitor@gmail.com
+1000;a77730@alunos.uminho.pt
+
+1001;a77870@alunos.uminho.pt
